@@ -1,6 +1,7 @@
 class GenerateData
   STANDARD_TYPES = ["string", "integer", "float", "boolean", "hash", "array"]
-  RESTRICTED_PROPS = ["type", "element", "size", "value"]
+  RESTRICTED_PROPS = ["type", "element", "size", "value", "random"]
+  MissingProps = Class.new(StandardError)
 
   def initialize(description)
     @description = description
@@ -13,6 +14,8 @@ class GenerateData
   private
 
   def generate(description)
+    missing_props_info = validate_description(description, "type")
+    return missing_props_info unless missing_props_info.nil?
     standard = STANDARD_TYPES.include?(description["type"])
     send("generate_#{description["type"]}", description) if standard
   end
@@ -26,22 +29,32 @@ class GenerateData
   end
 
   def generate_array(description)
+    missing_props_info = validate_description(description, "size", "element")
+    return missing_props_info unless missing_props_info.nil?
     Array.new(description["size"].to_i) { generate(description["element"]) }
   end
 
   def generate_boolean(description)
-    description["value"] || rand > 0.5
+    return !!description["value"] unless description["value"].nil?
+    true
   end
 
   def generate_string(description)
-    description["value"] || (("a".."z").to_a + (0..20).to_a).shuffle
+    return description["value"].to_s unless description["value"].nil?
+    "default_string"
   end
 
   def generate_float(description)
-    description["value"] || (rand * 100)
+    return description["value"].to_f unless description["value"].nil?
+    100.0
   end
 
   def generate_integer(description)
-    description["value"] || generate_float(description).round.to_i
+    generate_float(description).round.to_i
+  end
+
+  def validate_description(description, *required_props)
+    missing = required_props - description.keys
+    return "Missing properties: #{missing.join(", ")}" unless missing.empty?
   end
 end
