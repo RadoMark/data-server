@@ -1,11 +1,15 @@
 class DataServer < Sinatra::Base
-  enable :logging
-
-  post "/data", provides: "json" do
-
+  configure do
+    register Sinatra::Reloader
+    enable :logging
+    enable :reload_templates
   end
 
-  get "/" do
+  get "/data" do
+    slim :data
+  end
 
+  post "/data", provides: "json" do
+    GenerateData.new(params).call.to_json
   end
 end
