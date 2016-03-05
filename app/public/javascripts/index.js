@@ -5,7 +5,8 @@ $(document).ready(function() {
       type: "array",
       size: 10,
       element: {
-        type: "integer"
+        type: "integer",
+        value: 50
       }
     },
     prop2: {
