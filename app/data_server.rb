@@ -3,6 +3,7 @@ class DataServer < Sinatra::Base
     register Sinatra::Reloader
     enable :logging
     enable :reload_templates
+    enable :cross_origin
   end
 
   get "/data" do

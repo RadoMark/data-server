@@ -6,6 +6,7 @@ gem "sinatra-contrib"
 gem "json"
 gem "require_all"
 gem "slim"
+gem "sinatra-cross_origin", "~> 0.3.2"
 
 group :development, :test do
   gem "pry"
